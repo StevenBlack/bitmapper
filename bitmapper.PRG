@@ -3,8 +3,8 @@
 * Version....:
 * Author.....: Steven Black
 * Date.......: 17 December 2012, 16:07:47
-* Notice.....: Copyright © 2012, Steven Black Consulting
-*              All Rights Reserved.
+* Notice.....: Copyright © 2012-2013, Steven Black Consulting
+*              MIT License http://stevenblack.com/MIT-License
 * Compiler...: Visual FoxPro 09.00.0000.7423 for Windows
 * Abstract...:
 * Parameters.:

@@ -86,6 +86,7 @@ FOR lni= 0 TO 31
 			loObj= This.&lcName
 			loObj.iBindBit= lni
 			loObj.Visible= .T.
+			This.Width= MAX( this.Width, loObj.width )
 		ENDIF
 	ELSE
 		IF llObjExists
@@ -143,6 +144,7 @@ DEFINE CLASS chkBit AS Checkbox
 iBindBit= -1   && In operation, between 0 and 31
 FontSize= 12
 Backstyle= 0
+Autosize= .T.
 
 *==========================
 FUNCTION Init( tnBit, tcCaption )

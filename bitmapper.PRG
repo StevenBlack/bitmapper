@@ -47,7 +47,7 @@ FUNCTION Init( tiVal, tiDomain )
 *==========================
 
 *? For now...
-This.aCaptions="Foo"
+This.aCaptions="caption undefined"
 
 IF VARTYPE( tiDomain )= "N"
 	This.iWorkBits= tiDomain

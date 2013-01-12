@@ -111,11 +111,22 @@ ELSE
 	liWorkBits= This.iWorkBits
 ENDIF
 
+DO CASE
+CASE LOWER( This.cCaptionCase )= "upper"
+	lcLabelexpr= "ALLTRIM( UPPER( cLabel ) )"
+CASE LOWER( This.cCaptionCase )= "lower"
+	lcLabelexpr= "ALLTRIM( LOWER( cLabel ) )"
+OTHERWISE
+	lcLabelexpr= "ALLTRIM( PROPER( cLabel ) )"
+ENDCASE
+
 IF This.lLoadFromBitTable
 
-	SELECT iBit, cLabel, iSeq ;
+	SELECT iBit, &lcLabelexpr AS cLabelstr, iSeq ;
 	  FROM ( This.cBitTable ) ;
-	 WHERE BITTEST( liWorkBits, iBit ) ;
+	 WHERE BITTEST( liWorkBits, iBit ) AND ;
+	       cType= "state" AND ;
+	       ! EMPTY( cLabel ) ;
 	 ORDER BY iSeq ;
 	  INTO CURSOR curCtrls
 

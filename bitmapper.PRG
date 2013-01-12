@@ -27,6 +27,7 @@ cCaptionCase= "proper"
 * The controlclass to use to display/chage bits
 cControlClass= "chkBit"
 
+
 * Properties for the numeric state of the mapper
 * The current aggregate state value
 iValue      = 0
@@ -39,7 +40,7 @@ iWorkBits   = -1
 oLayoutMgr= .NULL.
 
 *-- Line height
-nLineHeight = 20
+nLineHeight = 24
 
 *-- Captions on controls
 DIMENSION aCaptions[32]
@@ -103,7 +104,7 @@ RETURN
 *==========================
 FUNCTION SelfConfig( tiWorkBits )
 *==========================
-LOCAL liWorkBits, lcName, loObj, llObjExists
+LOCAL liWorkBits, lcName, loObj, llObjExists, lcLabelExpr, lcCaptionCase
 
 IF VARTYPE( tiBorkbits ) = "N"
 	liWorkBits= tiWorkBits
@@ -137,7 +138,7 @@ IF This.lLoadFromBitTable
 		SCAN
 			IF BITTEST( liWorkBits, iBit )
 				lcName= "chk"+ TRANSFORM( iBit )
-				This.AddObject( lcName, This.cControlClass, lni, ALLTRIM( cLabel ) )
+				This.AddObject( lcName, This.cControlClass, iBit, cLabelstr )
 				loObj= This.&lcName
 				loObj.iBindBit= iBit
 				loObj.Visible= .T.

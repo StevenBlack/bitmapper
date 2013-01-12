@@ -22,6 +22,7 @@ Backstyle   = 0
 * The table where the bits, labels and Sequences are kept
 lLoadFromBitTable= .F.
 cBitTable= "bit"
+cCaptionCase= "proper"
 
 * The controlclass to use to display/chage bits
 cControlClass= "chkBit"

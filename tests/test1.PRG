@@ -21,6 +21,8 @@ x.visible=.t.
 ***************************
 DEFINE CLASS My AS CtrBit
 ***************************
+
+
 *=================
 FUNCTION Change()
 *=================
@@ -29,4 +31,5 @@ IF This.isInitialized
 	DEBUGOUT This.iValue
 ENDIF
 RETURN
+
 ENDDEFINE

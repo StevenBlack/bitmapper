@@ -19,6 +19,10 @@ DEFINE CLASS ctrBit AS Container
 BorderWidth = 0
 Backstyle   = 0
 
+* The table where the bits, labels and Sequences are kept
+lLoadFromBitTable= .F.
+cBitTable= "bit"
+
 * The controlclass to use to display/chage bits
 cControlClass= "chkBit"
 
@@ -45,6 +49,10 @@ isInitialized= .f.
 *==========================
 FUNCTION Init( tiVal, tiDomain )
 *==========================
+
+IF EMPTY( this.cBitTable ) OR ( NOT FILE( FORCEEXT( this.cBitTable, "dbf" )) AND NOT USED( this.cBitTable ) )
+	This.lLoadFromBitTable= .F.
+ENDIF
 
 *? For now...
 This.aCaptions="caption undefined"
@@ -73,27 +81,80 @@ This.isInitialized= .T.
 RETURN
 
 *==========================
-FUNCTION SelfConfig()
+FUNCTION Empty()
 *==========================
-LOCAL liWorkBits, lcName, loObj, llObjExists
-liWorkBits= This.iWorkBits
-FOR lni= 0 TO 31
-	lcName= "chk"+ TRANSFORM( lni )
-	llObjExists= TYPE( "This."+ lcName ) = "O"
-	IF BITTEST( liWorkBits, lni )
-		IF ! llObjExists
-			This.AddObject( lcName, This.cControlClass, lni, this.aCaptions[ lni+ 1 ] )
-			loObj= This.&lcName
-			loObj.iBindBit= lni
-			loObj.Visible= .T.
-			This.Width= MAX( this.Width, loObj.width )
-		ENDIF
-	ELSE
-		IF llObjExists
-			This.RemoveObject( lcName )
-		ENDIF
+LOCAL lni
+FOR lni= This.Objects.Count TO 1 STEP -1
+	IF LOWER( This.Objects( lni ).Class ) = LOWER( This.cControlClass )
+		This.Objects( lni ).Release()
 	ENDIF
 ENDFOR
+RETURN
+
+
+*==========================
+FUNCTION iWorkBits_Assign( tiPassed )
+*==========================
+This.iWorkBits= tiPassed
+This.SelfConfig()
+RETURN
+
+*==========================
+FUNCTION SelfConfig( tiWorkBits )
+*==========================
+LOCAL liWorkBits, lcName, loObj, llObjExists
+
+IF VARTYPE( tiBorkbits ) = "N"
+	liWorkBits= tiWorkBits
+ELSE
+	liWorkBits= This.iWorkBits
+ENDIF
+
+IF This.lLoadFromBitTable
+
+	SELECT iBit, cLabel, iSeq ;
+	  FROM ( This.cBitTable ) ;
+	 WHERE BITTEST( liWorkBits, iBit ) ;
+	 ORDER BY iSeq ;
+	  INTO CURSOR curCtrls
+
+	IF _TALLY > 0
+		This.Empty()
+
+		SELECT curCtrls
+		SCAN
+			IF BITTEST( liWorkBits, iBit )
+				lcName= "chk"+ TRANSFORM( iBit )
+				This.AddObject( lcName, This.cControlClass, lni, ALLTRIM( cLabel ) )
+				loObj= This.&lcName
+				loObj.iBindBit= iBit
+				loObj.Visible= .T.
+				This.Width= MAX( this.Width, loObj.width )
+			ENDIF
+		ENDSCAN
+	ENDIF
+
+ELSE
+
+	FOR lni= 0 TO 31
+		lcName= "chk"+ TRANSFORM( lni )
+		llObjExists= TYPE( "This."+ lcName ) = "O"
+		IF BITTEST( liWorkBits, lni )
+			IF ! llObjExists
+				This.AddObject( lcName, This.cControlClass, lni, this.aCaptions[ lni+ 1 ] )
+				loObj= This.&lcName
+				loObj.iBindBit= lni
+				loObj.Visible= .T.
+				This.Width= MAX( this.Width, loObj.width )
+			ENDIF
+		ELSE
+			IF llObjExists
+				This.RemoveObject( lcName )
+			ENDIF
+		ENDIF
+	ENDFOR
+	
+ENDIF
 This.Layout()
 RETURN
 
@@ -123,12 +184,6 @@ FUNCTION Release()
 RELEASE This
 RETURN
 
-*==========================
-FUNCTION iWorkBits_Assign( tiPassed )
-*==========================
-This.iWorkBits= tiPassed
-This.SelfConfig()
-RETURN
 
 *==========================
 FUNCTION Change
@@ -154,7 +209,7 @@ IF VARTYPE( tnBit ) = "N"
 ENDIF
 IF VARTYPE( tcCaption ) = "C"
 	This.Caption= tcCaption
-ENDIF 
+ENDIF
 RETURN
 
 *==========================
